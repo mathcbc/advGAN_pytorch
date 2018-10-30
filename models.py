@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-TINY = 1e-8
 
 # Target Model definition
 class MNIST_target_net(nn.Module):
