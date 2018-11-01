@@ -19,4 +19,8 @@ python3 main.py
 python3 test_adversarial_examples.py
 ```
 
-**NOTE:** I failed to reproduce the results of the paper. If you know the reason, please contact me.
+## results
+
+**attack success rate** in the MNIST test set: **99%**
+
+**NOTE:** My implementation is a little different from the paper, because I add a clipping trick.
