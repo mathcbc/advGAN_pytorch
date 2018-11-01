@@ -6,7 +6,6 @@ import torch.nn.functional as F
 import torchvision
 import os
 
-TINY = 1e-8
 models_path = './models/'
 
 
@@ -58,7 +57,10 @@ class AdvGAN_Attack:
         # optimize D
         for i in range(1):
             perturbation = self.netG(x)
-            adv_images = perturbation + x
+
+            # add a clilping trick
+            adv_images = torch.clamp(perturbation, -0.3, 0.3) + x
+            adv_images = torch.clamp(adv_images, self.box_min, self.box_max)
 
             self.optimizer_D.zero_grad()
             pred_real = self.netDisc(x)
@@ -74,6 +76,7 @@ class AdvGAN_Attack:
         # optimize G
         for i in range(1):
             self.optimizer_G.zero_grad()
+
             # cal G's loss in GAN
             pred_fake = self.netDisc(adv_images)
             loss_G_fake = F.mse_loss(pred_fake, torch.ones_like(pred_fake, device=self.device))
@@ -82,7 +85,7 @@ class AdvGAN_Attack:
             # calculate perturbation norm
             C = 0.1
             loss_perturb = torch.mean(torch.norm(perturbation.view(perturbation.shape[0], -1), 2, dim=1))
-            loss_perturb = torch.max(loss_perturb - C, torch.zeros(1, device=self.device))
+            # loss_perturb = torch.max(loss_perturb - C, torch.zeros(1, device=self.device))
 
             # cal adv loss
             logits_model = self.model(adv_images)
@@ -100,8 +103,8 @@ class AdvGAN_Attack:
             # loss_adv = -F.mse_loss(logits_model, onehot_labels)
             # loss_adv = - F.cross_entropy(logits_model, labels)
 
+            adv_lambda = 10
             pert_lambda = 1
-            adv_lambda = 1
             loss_G = adv_lambda * loss_adv + pert_lambda * loss_perturb
             loss_G.backward()
             self.optimizer_G.step()

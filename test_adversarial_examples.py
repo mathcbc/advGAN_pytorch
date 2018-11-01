@@ -22,7 +22,7 @@ target_model.load_state_dict(torch.load(pretrained_model))
 target_model.eval()
 
 # load the generator of adversarial examples
-pretrained_generator_path = './models/netG_epoch_100.pth'
+pretrained_generator_path = './models/netG_epoch_60.pth'
 pretrained_G = models.Generator(gen_input_nc, image_nc).to(device)
 pretrained_G.load_state_dict(torch.load(pretrained_generator_path))
 pretrained_G.eval()
