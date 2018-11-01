@@ -58,7 +58,7 @@ class AdvGAN_Attack:
         for i in range(1):
             perturbation = self.netG(x)
 
-            # add a clilping trick
+            # add a clipping trick
             adv_images = torch.clamp(perturbation, -0.3, 0.3) + x
             adv_images = torch.clamp(adv_images, self.box_min, self.box_max)
 
